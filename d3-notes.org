@@ -1,0 +1,62 @@
+#+title: d3 talk
+
+* gallery of cool d3 things
+** external
+- https://github.com/d3/d3/wiki/Gallery
+- treemap: https://bl.ocks.org/mbostock/4063582
+- voronoi: https://bl.ocks.org/mbostock/4060366
+- calendar view: https://bl.ocks.org/mbostock/4063318
+- force-directed graph: https://bl.ocks.org/mbostock/4062045
+- word cloud: https://bl.ocks.org/blockspring/847a40e23f68d6d7e8b5
+- political influence halo: http://vizuly.io/product/halo/?demo=d3js
+- hourly heatmap http://bl.ocks.org/tjdecke/5558084
+- cluster purity: https://bl.ocks.org/nswamy14/e28ec2c438e9e8bd302f
+- 3d surface plot: http://bl.ocks.org/supereggbert/aff58196188816576af0
+- [[https://bl.ocks.org/Azgaar/b845ce22ea68090d43a4ecfb914f51bd][fantasy map generator]]
+** some stuff I made
+- petri net: https://jsfiddle.net/tangentstorm/bjp5nv4a/
+- level editor with scary compact code: https://jsfiddle.net/tangentstorm/3tDTY/
+- binary decision diagram: =https broken, use http=
+   http://jsfiddle.net/tangentstorm/bLbayo6c/
+- [[http://games.tangentcode.com/tentraminos/][tentraminos]]
+
+* d3 basics
+- difference from kendo
+  - no canned charts (but see =c3.js=)
+- basic jquery-like stuff
+  - dom updates
+  - animation
+- difference from jquery:
+  - geometry algorithms
+    - spatial layouts
+    - quadtrees
+    - polygons
+  - general update pattern:
+    =.data()=, =.enter()=, and =.exit()=
+
+* general update pattern
+- animation of the update pattern:
+  - odd numbers vs prime numbers
+  https://jsfiddle.net/tangentstorm/xa1q5tre/
+
+* animation
+- juggling demo: https://jsfiddle.net/tangentstorm/h27b68kb/2/
+
+
+* d3 in our system
+** wintray
+** old d3 charts
+** digraph
+- solar system graph demo =work.apps.d3_solar=
+** word cloud demo
+
+* a d3-powered custom widgets
+- correlation matrix demo
+- revisit the odds/prime visualizer (refresh layer)
+
+
+* where to get the slides
+
+
+* scraps
+- replicate the circle/square transitions: https://jsfiddle.net/tangentstorm/d5LkzhLL/
