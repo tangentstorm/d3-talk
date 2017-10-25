@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>d3 update pattern</title>
+  <script src="http://d3js.org/d3.v4.js"></script>
+  <script src="http://d3js.org/d3-selection-multi.v1.js"></script>
+  <style type="text/css">
+    svg { width:480px; height:200px; border: solid black 1px; }
+    rect { stroke: black; }
+    text { font-family: Verdana, sans-serif; }
+  </style>
+</head>
+<body>
+
+<svg>
+  <g id="current"  transform="translate(50, 50)"/>
+  <g id="incoming" transform="translate(50,100)"/>
+</svg>
+<div>
+  <input id="newvalue" type="text" value="banana"/>
+  <button onclick="update()">update</button>
+</div>
+<script>
+
+  function drawList(sel, list){
+    const cellW = cellH = 32, gap = 8;
+    // enter
+    let cells = d3.select(sel).selectAll('g').data(list);
+    let newCells = cells.enter().append('g')
+      .attr('transform', (d,i)=>['translate(',i*(cellW+gap),',0)'].join(''))
+      .style('opacity', 0.0);
+    newCells.append('rect').attrs({'width': cellW, 'height': cellH, fill:'lime'});
+    newCells.append('text').attrs({x:10, y:20}).text(d=>d);
+    newCells.transition().duration(1500).style('opacity', 1.0);
+    newCells.selectAll('rect').transition().delay(500).duration(1500).attr('fill', 'silver');
+    // update
+    cells.select('text').text(d=>d);
+    // exit
+    let oldCells = cells.exit();
+    oldCells.selectAll('rect').transition().duration(750).attr('fill', 'red');
+    oldCells.transition().delay(250).duration(1500).style('opacity', 0.0).remove();
+  }
+
+  function update(){
+    drawList('#incoming', document.getElementById('newvalue').value.split(''));
+  }
+
+  drawList('#current', [ 2, 3, 5, 7,11,13,15]);
+
+</script>
+</body>
+</html>
