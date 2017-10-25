@@ -3,50 +3,64 @@
 <head>
   <meta charset="UTF-8">
   <title>d3 update pattern</title>
-  <script src="http://d3js.org/d3.v4.js"></script>
-  <script src="http://d3js.org/d3-selection-multi.v1.js"></script>
+  <script src="./d3.v4.js"></script>
+  <script src="./d3-selection-multi.v1.js"></script>
   <style type="text/css">
-    svg { width:480px; height:200px; border: solid black 1px; }
+    svg { width:800px; height:48px; border: solid black 1px; }
     rect { stroke: black; }
     text { font-family: Verdana, sans-serif; }
   </style>
 </head>
 <body>
 
+<h1>The General Update Pattern</h1>
+
 <svg>
-  <g id="current"  transform="translate(50, 50)"/>
-  <g id="incoming" transform="translate(50,100)"/>
+  <g id="tiles" transform="translate(8, 8)"/>
 </svg>
 <div>
-  <input id="newvalue" type="text" value="banana"/>
+  <input id="newvalue" value="apple pie"/>
   <button onclick="update()">update</button>
+</div>
+<div>
+  use key function: <input type="checkbox" id="use-key"/>
 </div>
 <script>
 
+  const cellW = 32, cellH = 32, gap = 8;
+
+  function el(id) { return document.getElementById(id); }
+  function placeTile(d,i) { return ['translate(',i*(cellW+gap),',0)'].join(''); }
+
+  function mainColor(d) { return d===' ' ? 'white'   : '#cad9f5'; }
+  function enterColor(d){ return d===' ' ? '#ccffcc' : 'lime';    }
+  function exitColor(d) { return d===' ' ? '#ffcccc' : 'red'; }
+
   function drawList(sel, list){
-    const cellW = cellH = 32, gap = 8;
     // enter
-    let cells = d3.select(sel).selectAll('g').data(list);
-    let newCells = cells.enter().append('g')
-      .attr('transform', (d,i)=>['translate(',i*(cellW+gap),',0)'].join(''))
-      .style('opacity', 0.0);
-    newCells.append('rect').attrs({'width': cellW, 'height': cellH, fill:'lime'});
+    let useKey = el('use-key').checked;
+    let cells = d3.select(sel).selectAll('g').data(list, useKey ? d=>d : null);
+
+    let newCells = cells.enter().append('g').attr('transform', placeTile).style('opacity', 0.0);
+    newCells.append('rect').attrs({'width': cellW, 'height': cellH, fill: enterColor});
     newCells.append('text').attrs({x:10, y:20}).text(d=>d);
-    newCells.transition().duration(1500).style('opacity', 1.0);
-    newCells.selectAll('rect').transition().delay(500).duration(1500).attr('fill', 'silver');
+    newCells.transition().duration(1500).style('opacity', 1.0)
+      .select('rect').transition().duration(1500).attr('fill', mainColor);
     // update
     cells.select('text').text(d=>d);
+    cells.select('rect').transition().delay(500).duration(1500).attr('fill', mainColor);
+    cells.transition().duration(1500).attr('transform', placeTile);
     // exit
     let oldCells = cells.exit();
-    oldCells.selectAll('rect').transition().duration(750).attr('fill', 'red');
+    oldCells.selectAll('rect').transition().duration(1500).attr('fill', exitColor);
     oldCells.transition().delay(250).duration(1500).style('opacity', 0.0).remove();
   }
 
   function update(){
-    drawList('#incoming', document.getElementById('newvalue').value.split(''));
+    drawList('#tiles', el('newvalue').value.split(''));
   }
 
-  drawList('#current', [ 2, 3, 5, 7,11,13,15]);
+  drawList('#tiles', "apple".split(''));
 
 </script>
 </body>
