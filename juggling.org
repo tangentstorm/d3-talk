@@ -1,0 +1,80 @@
+
+* topright/topleft
+#+begin_src js
+const tossDispatch = d3.dispatch('topLeft', 'topRight');
+#+end_src
+
+* =toss()=
+#+begin_src js
+
+const tossDur=600, tossHeight=50;
+
+function toss(ball, dx, tossEvent){
+  // https://bl.ocks.org/mbostock/5348789  Concurrent Transitions"
+  // "D3 transitions are exclusive and per-element".. these dummy 'lock' selections let us work around it.
+  let xLock = {}, yLock = {},
+      xStart = parseFloat(ball.attr('cx')),
+      yStart = parseFloat(ball.attr('cy'));
+  d3.select(xLock).transition().duration(tossDur).tween('attr:cx', function(){
+      let i = d3.interpolate(xStart, xStart + dx);
+      return function(t) { ball.attr('cx', i(t))}
+    });
+  d3.select(yLock)
+    .transition().duration(tossDur/2).ease(d3.easeQuad).tween('attr:cy', function(){
+      let i = d3.interpolate(yStart, yStart-tossHeight);
+      return function(t) { ball.attr('cy', i(t))}
+    })
+    .transition().on('end', function(){ tossDispatch.call(tossEvent)})
+    .transition().duration(tossDur/2).ease(d3.easeQuad).tween('attr:cy', function(){
+      let i = d3.interpolate(yStart-tossHeight, yStart);
+      return function(t) { ball.attr('cy', i(t))}
+    });
+}
+#+end_src
+
+* left/right hands
+#+begin_src js
+const leftHand = ['red'], rightHand = ['gold','lime'];
+#+end_src
+
+* tossRight/tossLeft:
+#+begin_src js
+function tossRight(){
+  let color = leftHand.pop(); if(!color) return;
+  d3.select('circle[fill="'+color+'"]').call(toss, hsep, 'topRight')
+    .transition().duration(tossDur).on('end', function(){ rightHand.unshift(color)});
+}
+
+function tossLeft(){
+  let color = rightHand.pop(); if(!color) return;
+  d3.select('circle[fill="'+color+'"]').call(toss, -hsep, 'topLeft')
+    .transition().duration(tossDur).on('end', function(){ leftHand.unshift(color)});
+}
+
+#+end_src
+
+* cross()
+#+begin_src js
+function cross(){
+  let crossLock = {}; // another dummy lock object.
+  tossLeft();
+  d3.select(crossLock).transition(tossDur/2).on('end', tossRight);
+}
+#+end_src
+
+* juggle()
+#+begin_src js
+function juggle(){
+  tossDispatch.on('topRight', tossRight).on('topLeft', tossLeft);
+  cross();
+}
+#+end_src
+
+* clear on button handler
+#+begin_src js
+      // on button click, clear juggle() callbacks
+      if(e){ tossDispatch.on('topLeft',null).on('topRight', null); }
+
+#+end_src
+
+
