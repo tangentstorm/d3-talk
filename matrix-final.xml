@@ -1,0 +1,100 @@
+<!-- 1010data quickapp to render a correlation matrix -->
+
+<table cols="x,y,v"><![CDATA[
+  a  a  1.0
+  a  b  0.25
+  a  c  -0.8342
+  a  d  0.183
+  b  b  1.0
+  b  c  0.3498
+  b  d  -0.013
+  c  c  1.0
+  c  d  -0.882
+  d  d  1.0
+]]></table>
+
+<defclass name="matrix">
+  <layer name="render">
+    <html><![CDATA[
+       <table>
+         <thead>
+          <tr>
+            <th class="corner"></th>
+            <th class="key">key</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <th class="key">key</th>
+              <td class="val">val</td>
+            </tr>
+         <tbody>
+       </table>
+    ]]></html>
+    <code language_="js"><![CDATA[
+var data = {
+ x: ~{enjson(@data.x;)}~,
+ y: ~{enjson(@data.y;)}~,
+ v: ~{enjson(@data.v;)}~,
+};
+      // debug helpers:
+      window.data = data;
+      window.elem = elem;
+      window.show = x => console.log(JSON.stringify(x));
+      console.clear();
+      show(data);
+
+
+var xs=[], vs={}; data.x.forEach(function(x,i) { if(!vs[x]) { xs.push(x); vs[x]={} } vs[x][data.y[i]] = data.v[i]; });
+
+var table = d3.select(elem[0]).select('table'),
+    thead = table.select('thead')
+    tbody = table.select('tbody');
+table.style('border','solid black 2px')
+
+let heads = thead.select('tr').selectAll('th.key').data(xs);
+heads.enter().append('th').attr('class','key'); // d3.v4: .classed('key')
+heads.text(d=>d)
+
+// add row headings
+let rows = tbody.selectAll('tr').data(xs);
+rows.enter().append('tr').append('th').attr('class','key');
+rows.select('th').text(d=>d);
+
+rows.each(function(dx){
+  let cells = d3.select(this).selectAll('td').data(xs);
+  cells.enter().append('td');
+  cells.attr('class',
+    dy => vs[dx][dy] == undefined ? 'nil' : 'val');
+});
+
+// fill in the data
+let cells = table.selectAll('td.val').data(data.v)
+cells.text(d=>d.toFixed(2)); // no .enter() because everything is already there.
+
+var color = d3.scale.linear()  // d3.v4: .scaleLinear()
+  .domain([-1,0,1])
+  .range(['tomato','white','cornflowerblue']);
+
+cells.style('background', d=>color(d));
+
+    ]]></code>
+  </layer>
+</defclass>
+
+<dynamic>
+    <render>
+    <web><stylesheet><content type_="css">
+      .hc-matrix .corner { background:black;color:white; }
+      .hc-matrix .key { background:#ccc; }
+      .hc-matrix .nil { background:#666; }
+      .hc-matrix td,
+      .hc-matrix th  {
+        width:32px; height:32px;
+        text-align:center; vertical-align:middle;
+      }
+    </content></stylesheet></web>
+  </render>
+
+  <widget class_="matrix"/>
+</dynamic>
+	

@@ -1,0 +1,144 @@
+* correlation matrix (upper right hand triangle)
+#+begin_src xml
+<table cols="x,y,v"><![CDATA[
+  a  a  1.0
+  a  b  0.25
+  a  c  -0.8342
+  a  d  0.183
+  b  b  1.0
+  b  c  0.3498
+  b  d  -0.013
+  c  c  1.0
+  c  d  -0.882
+  d  d  1.0
+]]></table>
+#+end_src
+
+* empty widget
+#+begin_src xml
+<defclass name="matrix">
+  <layer name="render">
+    <html><![CDATA[
+      hello.
+    ]]></html>
+    <code language_="js"><![CDATA[
+      console.log('I am a widget.');
+    ]]></code>
+  </layer>
+</defclass>
+
+<dynamic>
+  <widget class_="matrix"/>
+</dynamic>
+#+end_src
+
+* data + debug helpers
+#+begin_src js
+      var data = {
+        x: ~{enjson(@data.x;)}~,
+        y: ~{enjson(@data.y;)}~,
+        v: ~{enjson(@data.v;)}~,
+      };
+
+      // debug helpers:
+      window.data = data;
+      window.elem = elem;
+      window.show = x => console.log(JSON.stringify(x));
+      console.clear();
+      show(data);
+#+end_src
+
+* group the data
+#+begin_src js
+var xs=[], vs={}; data.x.forEach(function(x,i) { if(!vs[x]) { xs.push(x); vs[x]={} } vs[x][data.y[i]] = data.v[i]; });
+#+end_src
+
+* html table stub
+#+begin_src html
+       <table>
+         <thead>
+          <tr>
+            <th class="corner"></th>
+            <th class="key">key</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <th class="key">key</th>
+              <td class="val">val</td>
+            </tr>
+         <tbody>
+       </table>
+#+end_src
+* stylesheet
+#+begin_src xml
+  <render>
+    <web><stylesheet><content type_="css">
+      .hc-matrix .corner { background:black;color:white; }
+      .hc-matrix .key { background:#ccc; }
+      .hc-matrix .nil { background:#666; }
+      .hc-matrix td,
+      .hc-matrix th  {
+        width:32px; height:32px;
+        text-align:center; vertical-align:middle;
+      }
+    </content></stylesheet></web>
+  </render>
+#+end_src
+
+* select each part
+#+begin_src js
+var tbl = d3.select(elem[0]).select('table'),
+    thead = d3.select('thead')
+    tbody = d3.select('tbody');
+
+// normally wold do this in stylesheet.
+// i'm just showing it's actually selected.
+table.style('border','solid black 2px')
+#+end_src
+
+* column headings
+#+begin_src js
+// add column headings
+let heads = thead.select('tr').selectAll('th.key').data(xs);
+heads.enter().append('th').attr('class','key'); // d3.v4: .classed('key')
+heads.text(d=>d)
+#+end_src
+
+* row headings
+#+begin_src js
+// add row headings
+let rows = tbody.selectAll('tr').data(xs);
+rows.enter().append('tr').append('th').attr('class','key');
+rows.select('th').text(d=>d);
+#+end_src
+
+* generate empty data cells
+#+begin_src js
+
+// allocate empty <td> cells with appropriate classes
+rows.each(function(dx){
+  let cells = d3.select(this).selectAll('td').data(xs);
+  cells.enter().append('td');
+  cells.attr('class',
+    dy => vs[dx][dy] == undefined ? 'nil' : 'val');
+});
+
+#+end_src
+
+* populate and colorize the data
+#+begin_src js
+
+// fill in the data.  (data.v was the original column from our table)
+let cells = table.selectAll('td.val').data(data.v)
+cells.text(d=>d.toFixed(2)); // no .enter() because everything is already there.
+#+end_src
+
+* populate and colorize the data
+#+begin_src js
+
+var color = d3.scale.linear()  // d3.v4: .scaleLinear()
+  .domain([-1,0,1])
+  .range(['tomato','white','cornflowerblue']);
+
+cells.style('background', d=>color(d));
+#+end_src
