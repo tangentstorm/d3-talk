@@ -1,0 +1,18 @@
+* h1
+#+begin_src xml
+<dynamic>
+  <widget class_="text">
+    <html>
+      <h1 id="my-h1">headline!</h1>
+      <main>content!</h1>
+    </html>
+  </widget>
+</dynamic>
+#+end_src
+
+* list titles
+#+begin_src js
+d3.select('main').html('').selectAll('p').data(WinMan.listWindows()).enter().append('p').text(d=>j(d).getKendoWindow().title())
+#+end_src
+
+* =wintray._redraw=
