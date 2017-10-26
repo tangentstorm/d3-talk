@@ -17,12 +17,14 @@
 - petri net: https://jsfiddle.net/tangentstorm/bjp5nv4a/
 - level editor with scary compact code: https://jsfiddle.net/tangentstorm/3tDTY/
 - binary decision diagram: =https broken, use http=
-   http://jsfiddle.net/tangentstorm/bLbayo6c/
+  http://jsfiddle.net/tangentstorm/bLbayo6c/
 - [[http://games.tangentcode.com/tentraminos/][tentraminos]]
 
 * d3 basics
 - difference from kendo
+  - low-level building blocks
   - no canned charts (but see =c3.js=)
+  - language is html/css, not kendo's DSL
 - basic jquery-like stuff
   - dom updates
   - animation
@@ -31,17 +33,21 @@
     - spatial layouts
     - quadtrees
     - polygons
+  - general update pattern
+
+* when to use d3
+ - use when:
+ - avoid when:
+   - template language (react/vue/angular) sometimes better
+
+* general update pattern
+- animation of the update pattern
+- key functions
   - general update pattern:
     =.data()=, =.enter()=, and =.exit()=
 
-* general update pattern
-- animation of the update pattern:
-  - odd numbers vs prime numbers
-  https://jsfiddle.net/tangentstorm/xa1q5tre/
-
 * animation
-- juggling demo: https://jsfiddle.net/tangentstorm/h27b68kb/2/
-
+- juggling demo:  http://jsfiddle.net/tangentstorm/h27b68kb/
 
 * d3 in our system
 ** wintray
@@ -54,9 +60,4 @@
 - correlation matrix demo
 - revisit the odds/prime visualizer (refresh layer)
 
-
-* where to get the slides
-
-
-* scraps
-- replicate the circle/square transitions: https://jsfiddle.net/tangentstorm/d5LkzhLL/
+* where to get the demo code
